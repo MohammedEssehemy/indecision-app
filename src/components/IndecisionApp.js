@@ -4,11 +4,12 @@ import Header from './Header';
 import Action from './Action';
 import Options from './Options';
 import AddOption from './AddOption';
-
+import OptionModal from './optionModal';
 
 export default class IndecisionApp extends React.Component {
   state = {
-    options: []
+    options: [],
+    selectedOption: undefined
   };
   handleRemoveAll =  () => {
     this.setState(()=>({ options: [] }));
@@ -17,10 +18,15 @@ export default class IndecisionApp extends React.Component {
   handlePick = () => {
     const idx = Math.floor(Math.random()*this.state.options.length);
     const opt = this.state.options[idx];
-    alert(opt);
+    // alert(opt);
+    this.setState(()=>({
+      selectedOption: opt
+    }))
   };
 
-
+  handleCloseModal= () => {
+    this.setState(()=>({selectedOption: undefined}));
+  }
   handleAddOption = (opt) => {
     if(!opt) return 'please add a valid option';
     if(this.state.options.includes(opt)) return 'this option already exists';
@@ -56,16 +62,24 @@ export default class IndecisionApp extends React.Component {
     return (
       <div>
         <Header subtitle={subtitle} />
-        <Action
-          hasOptions={!!this.state.options.length}
-          handlePick = {this.handlePick}
+        <div className="container">
+          <Action
+            hasOptions={!!this.state.options.length}
+            handlePick = {this.handlePick}
+          />
+          <div className="widget">
+            <Options
+              handleDeleteOpt={this.handleDeleteOpt}
+              options={this.state.options}
+              handleRemoveAll = {this.handleRemoveAll}
+            />
+            <AddOption  handleAddOption = {this.handleAddOption}/>
+          </div>
+        </div>
+          <OptionModal
+          selectedOption={this.state.selectedOption}
+          onCloseClick={this.handleCloseModal}
         />
-        <Options
-          handleDeleteOpt={this.handleDeleteOpt}
-          options={this.state.options}
-          handleRemoveAll = {this.handleRemoveAll}
-        />
-        <AddOption  handleAddOption = {this.handleAddOption}/>
       </div>
     )
   }
